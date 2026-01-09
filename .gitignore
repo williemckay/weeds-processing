@@ -1,0 +1,29 @@
+# ---- Python ----
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+
+# ---- Logs & runtime outputs ----
+logs/
+*.log
+output/
+outputs/
+data/
+scratch/
+
+# ---- Config / secrets ----
+.env
+config*.json
+config*.yaml
+config*.yml
+
+# ---- ArcGIS / GIS ----
+*.lock
+*.gdb/
+*.sde
+
+# ---- OS ----
+Thumbs.db
+Desktop.ini
