@@ -1,15 +1,13 @@
 from arcgis.gis import GIS
-from arcgis.features import FeatureLayerCollection
-from arcgis.features import FeatureLayer
+from arcgis.features import FeatureLayerCollection, FeatureLayer
 from copy import deepcopy
-import pandas as pd
-import smtplib, configparser
 from pathlib import Path
 from email.message import EmailMessage
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-import sys
-import traceback
+import pandas as pd
+import smtplib, configparser, sys, traceback
+
 
 sys.path.append(r"C:\Scripts\shared")
 sys.stdout.reconfigure(encoding='utf-8')
@@ -52,9 +50,7 @@ try:
     
     gis = GIS(AGOL_portal, AGOL_username, AGOL_password)
     
-    #gis = GIS("https://horizonsrc.maps.arcgis.com", "William.Mckay_HorizonsRC", "CatchmentOperationsAdmin2026")
     
-    #weedsTest = gis.content.get('823aa3ddbecb47489591452d47ef76ff')
     weeds = gis.content.get('c3188f713dc8484ab68df07ef86c40a9')
     
     
@@ -433,7 +429,99 @@ try:
         print("Edits applied to occupancyExtent:", eooUpdate_updates)
     else:
         print("No changes detected for occupancyExtent.")
-        
+
+
+    ###########################Populate Nulls
+    inspection_df = tableDf.copy()
+    site_sdf = siteDf.copy()
+
+    stringFields = [
+        'bioAgentSelfEst',
+        'Nursery',
+        'Present',
+        'Damage'
+    ]
+
+    intFields = [
+        'adultCount',
+        'juvenileCount',
+        'seedlingCount',
+        'largeSizeCount',
+        'mediumSizeCount',
+        'smallSizeCount',
+        'ExtraSmallSizeCount'
+    ]
+
+    inspectionStringNull = inspection_df[inspection_df[stringFields].isna().any(axis=1)]
+    inspectionIntNull = inspection_df[inspection_df[intFields].isna().any(axis=1)]
+    siteNull = site_sdf[site_sdf['cultivated'].isna()]
+
+    inspectionStringNull[stringFields] = inspectionStringNull[stringFields].fillna('N')
+    inspectionIntNull[intFields] = inspectionIntNull[intFields].fillna(0)
+
+    siteNull['cultivated'] = siteNull['cultivated'].fillna('N')
+
+
+    inspectionString = inspectionStringNull[[
+        'OBJECTID',
+        'bioAgentSelfEst',
+        'Nursery',
+        'Present',
+        'Damage'
+    ]]
+
+    inspectionInt = inspectionIntNull[[
+        'OBJECTID',
+        'adultCount',
+        'juvenileCount',
+        'seedlingCount',
+        'largeSizeCount',
+        'mediumSizeCount',
+        'smallSizeCount',
+        'ExtraSmallSizeCount'
+    ]]
+
+    siteCultNull = siteNull[[
+        'OBJECTID',
+        'cultivated'
+    ]]
+
+    #create dictionaries
+    inspectionString_updates = [
+            {"attributes": row.to_dict()}
+            for _, row in inspectionString.iterrows()
+        ]
+
+    inspectionInt_updates = [
+            {"attributes": row.to_dict()}
+            for _, row in inspectionInt.iterrows()
+        ]
+
+    siteNull_updates = [
+            {"attributes": row.to_dict()}
+            for _, row in siteCultNull.iterrows()
+        ]  
+
+
+    if inspectionString_updates:
+        result_inspectionStringUpdates = inspection.edit_features(updates=inspectionString_updates)
+        print("Edits applied to Null string values in Inspection table:", inspectionString_updates)
+    else:
+        print("No changes detected for  Null string values in Inspection table.")
+
+
+    if inspectionInt_updates:
+        result_inspectionIntUpdates = inspection.edit_features(updates=inspectionInt_updates)
+        print("Edits applied to Null integer values in Inspection table:", inspectionInt_updates)
+    else:
+        print("No changes detected for Null integer values in Inspection table.")
+
+
+    if siteNull_updates:
+        result_siteNullUpdates = site.edit_features(updates=siteNull_updates)
+        print("Edits applied to Null cultivated values:", siteNull_updates)
+    else:
+        print("No changes detected for Null cultivated values.") 
     
     mark_success(TASK_NAME)
     
