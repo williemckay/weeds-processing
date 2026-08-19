@@ -40,3 +40,10 @@ Below are the strategies listed with using branches for this repository
 
 ### Use of Issues
 The issues tab is to be used to log any bugs, enhancements or development ideas to the codebase in this repository. An issue in here is to be used at a scale where it can be addressed and fixed as a branch to be merged back onto the master after fixing
+
+### GIT use for edits
+* When starting to do edits on your local always use **git pull** first
+* Do frequent adds and commits with messages, ideally comitting edits on one script file at a time
+* When happy with edits use **git push** to go into the repository
+* With a git bash terminal open in the server use **git pull** to bring in latest changes 
+
