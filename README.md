@@ -6,6 +6,8 @@ A repository for doing processing of weeds data collected by the redeveloped wee
 * Copies base site ID from site table to inspection record to ensure integrity of joins between the site and inspection tables
 * Updates contacts in site table from changes made in inspection table
 * Uses heartbeat package to notify via email when server processes have not worked
+* A batch file for running as a scheduled task in the OperationTasks server
+* Events of the script are logged to logWeedsProcessing.log which is part of this repository
 
 ## Installation
 To use this script first clone the repository onto your local machine.
@@ -15,8 +17,8 @@ Right click in your folder of choice and select GIT Bash Here and enter
 
 
 ## Dependancies
-For this to run the heartbeat package by Willie McKay needs to be installed on C:\Scripts\shared of the machine running the script.  This package keeps an eye on scheduled scripts to ensure that they have run and sends alerts by email when they don't.
-This script was created in an environment running ArcGIS Pro 3.1.  In other versions of ArcGIS Pro, outputs should be checked to ensure all operations are running.
+* For this to run the heartbeat package by Willie McKay needs to be installed on C:\Scripts\shared of the machine running the script.  This package keeps an eye on scheduled scripts to ensure that they have run and sends alerts by email when they don't
+* This script was created in an environment running ArcGIS Pro 3.1.  In other versions of ArcGIS Pro, outputs should be checked to ensure all operations are running
 
 ## Contribution Guidelines
 To contribute to this repository please adhere to the branching strategy as outlined below and make sure you do frequent commits with meaningful messages.  
