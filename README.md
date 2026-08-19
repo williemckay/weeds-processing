@@ -9,11 +9,17 @@ A repository for doing processing of weeds data collected by the redeveloped wee
 * A batch file for running as a scheduled task in the OperationTasks server
 * Events of the script are logged to logWeedsProcessing.log which is part of this repository
 
-## Installation
+## Installation and use
+### Initial Setup
 To use this script first clone the repository onto your local machine.
-Right click in your folder of choice and select GIT Bash Here and enter
+Right click in your folder of choice and select **GIT Bash Here** and enter the command below into the terminal
 
 > git clone https://github.com/williemckay/weeds-processing.git
+
+### Continued Use
+The philosophy behind this repository is for editing to be done on local machines; 
+The github repository to be the master code source; and the server to pull changes from the github repository. 
+The process for editing is listed in the Contribution Guidelines section below.
 
 
 ## Dependancies
