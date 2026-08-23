@@ -12,9 +12,11 @@ A repository for doing processing of weeds data collected by the redeveloped wee
 ## Installation and use
 ### Initial Setup
 To use this script first clone the repository onto your local machine.
-Right click in your folder of choice and select **GIT Bash Here** and enter the command below into the terminal
+Right click in your folder of choice and select `GIT Bash Here` and enter the command below into the terminal which opens
 
-> git clone https://github.com/williemckay/weeds-processing.git
+```bash
+git clone https://github.com/williemckay/weeds-processing.git
+```
 
 ### Continued Use
 The philosophy behind this repository is for editing to be done on local machines; 
