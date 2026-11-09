@@ -215,10 +215,45 @@ try:
         print("Edits applied to record end date:", recordEndDate_updates)
     else:
         print("No changes detected for record end date.")
-    
-    
-    
-    
+
+
+    ############### INACTIVE SITE RECORD END DATE ######################
+    #If a site is inactive (activeSite = "N") and its most recent inspection has no recordEndDate,
+    #fill recordEndDate with the site's last EditDate (taken as the date the site was made inactive).
+    #Fresh query so this sees the record end dates written by the block above.
+    print("Populating record end dates for inactive sites")
+
+    inactiveInspDf = inspection.query(where="1=1", out_fields="*").sdf
+    inactiveSiteDf = site.query(where="1=1", out_fields="*").sdf
+
+    inactiveSites = inactiveSiteDf[inactiveSiteDf['activeSite'] == 'N'][['BaseSiteID','EditDate']].copy()
+
+    #Most recent inspection per site = highest revisitNumber
+    latestRevisit = inactiveInspDf.groupby(['BaseSiteID'], as_index=False)['revisitNumber'].max()
+    latestRevisit['revisitNumber'] = latestRevisit['revisitNumber'].astype(str)
+    latestRevisit['InspectionID'] = latestRevisit['BaseSiteID'] + "-" + latestRevisit['revisitNumber']
+    latestInspections = inactiveInspDf[inactiveInspDf['InspectionID'].isin(latestRevisit['InspectionID'])]
+
+    #Keep only latest inspections with a blank recordEndDate
+    latestNoEndDate = latestInspections[latestInspections['recordEndDate'].isna()][['OBJECTID','BaseSiteID','InspectionID']]
+
+    #Join to inactive sites and copy the site's EditDate into recordEndDate
+    inactiveEndDates = latestNoEndDate.merge(inactiveSites, on='BaseSiteID', how='inner')
+    inactiveEndDates = inactiveEndDates[inactiveEndDates['EditDate'].notna()].copy()
+    inactiveEndDates['recordEndDate'] = inactiveEndDates['EditDate']
+
+    inactiveEndDate_updates = [
+        {"attributes": row.to_dict()}
+        for _, row in inactiveEndDates[['OBJECTID','recordEndDate']].iterrows()
+    ]
+
+    if inactiveEndDate_updates:
+        resultInactiveEndDate = inspection.edit_features(updates=inactiveEndDate_updates)
+        print("Edits applied to inactive site record end dates:", inactiveEndDate_updates)
+    else:
+        print("No changes detected for inactive site record end dates.")
+
+
     #################### SYNC PARENT CONTACT LATEST NON BLANK #####################
     print("Syncing contacts up to site record")
     #for each BaseSiteID in inspection table  set all blanks to the latest Non-Blank value by revisitNumber for who, address, and phone number fields
